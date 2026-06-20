@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 620" role="img" aria-labelledby="title desc">
+  <title id="title">AB-410 layered intelligent application architecture</title>
+  <desc id="desc">A five-layer diagram showing foundation, rooms, reflexes, mind, and law for the AB-410 course masterwork.</desc>
+  <rect width="920" height="620" fill="#eef3f7"/>
+  <rect x="52" y="52" width="816" height="516" rx="8" fill="#ffffff" stroke="#d9e0e8" stroke-width="2"/>
+  <text x="92" y="105" fill="#15171a" font-family="Georgia, serif" font-size="31" font-weight="700">AB-410 Masterwork Platform</text>
+  <text x="92" y="134" fill="#5c6470" font-family="Segoe UI, Arial, sans-serif" font-size="16">One domain-specific system built floor by floor for scenario mastery</text>
+
+  <g transform="translate(92 174)">
+    <rect width="736" height="64" rx="8" fill="#15171a"/>
+    <text x="28" y="28" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">LAW AND CONSCIENCE</text>
+    <text x="28" y="50" fill="#d5dde6" font-family="Segoe UI, Arial, sans-serif" font-size="15">Business rules, process flows, DLP, Managed Environments, monitoring</text>
+  </g>
+
+  <g transform="translate(92 258)">
+    <rect width="355" height="76" rx="8" fill="#f8fbfd" stroke="#d9e0e8"/>
+    <rect width="8" height="76" rx="4" fill="#a51c30"/>
+    <text x="28" y="31" fill="#15171a" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="800">MIND</text>
+    <text x="28" y="55" fill="#5c6470" font-family="Segoe UI, Arial, sans-serif" font-size="15">AI Hub prompts, prebuilt models, grounding</text>
+  </g>
+
+  <g transform="translate(473 258)">
+    <rect width="355" height="76" rx="8" fill="#f8fbfd" stroke="#d9e0e8"/>
+    <rect width="8" height="76" rx="4" fill="#285c4d"/>
+    <text x="28" y="31" fill="#15171a" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="800">REFLEXES</text>
+    <text x="28" y="55" fill="#5c6470" font-family="Segoe UI, Arial, sans-serif" font-size="15">Cloud flows, approvals, conditions, run history</text>
+  </g>
+
+  <g transform="translate(92 354)">
+    <rect width="355" height="88" rx="8" fill="#f8fbfd" stroke="#d9e0e8"/>
+    <rect width="8" height="88" rx="4" fill="#335c81"/>
+    <text x="28" y="32" fill="#15171a" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="800">ROOMS</text>
+    <text x="28" y="57" fill="#5c6470" font-family="Segoe UI, Arial, sans-serif" font-size="15">Model-driven records management</text>
+    <text x="28" y="77" fill="#5c6470" font-family="Segoe UI, Arial, sans-serif" font-size="15">Canvas mobile field logger</text>
+  </g>
+
+  <g transform="translate(473 354)">
+    <rect width="355" height="88" rx="8" fill="#f8fbfd" stroke="#d9e0e8"/>
+    <rect width="8" height="88" rx="4" fill="#9b6b19"/>
+    <text x="28" y="32" fill="#15171a" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="800">EXAM DECISIONS</text>
+    <text x="28" y="57" fill="#5c6470" font-family="Segoe UI, Arial, sans-serif" font-size="15">Need to tool, column to type, symptom to control</text>
+    <text x="28" y="77" fill="#5c6470" font-family="Segoe UI, Arial, sans-serif" font-size="15">Lowest capable option wins</text>
+  </g>
+
+  <g transform="translate(92 462)">
+    <rect width="736" height="68" rx="8" fill="#fff8f8" stroke="#d8b8bf"/>
+    <text x="28" y="31" fill="#a51c30" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="800">FOUNDATION</text>
+    <text x="28" y="54" fill="#5c6470" font-family="Segoe UI, Arial, sans-serif" font-size="15">Developer environment, unmanaged solution, Dataverse tables, lookup relationships, security roles</text>
+  </g>
+
+  <path d="M460 530 L460 545" stroke="#a51c30" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="460" cy="551" r="9" fill="#a51c30"/>
+  <text x="332" y="585" fill="#15171a" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="800">Shared Dataverse spine</text>
+</svg>

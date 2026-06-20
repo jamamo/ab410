@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body class="auth-pending">
+  <div id="account-slot"></div>
+  <main id="result">BROWSER WAIT</main>
+  <script>
+    window.AB410_APP = {
+      getState: () => ({ modules: {}, quizzes: {}, labs: {}, practice: { attempts: 0 } }),
+      getMetrics: () => ({ readiness: 0, completedModules: 0, totalModules: 20, completedLabs: 0, totalLabs: 12, averageQuiz: 0, practiceBest: 0, lens: "healthcare" }),
+      setUserScope: () => {},
+      applyRemoteState: () => {},
+      save: () => {},
+      render: () => {}
+    };
+    window.setTimeout(() => {
+      const checks = [
+        document.getElementById("auth-gate"),
+        document.getElementById("auth-form"),
+        document.querySelector("[data-auth-mode=register]"),
+        document.getElementById("auth-email"),
+        document.getElementById("auth-password")
+      ];
+      const register = document.querySelector("[data-auth-mode=register]");
+      register?.click();
+      const registrationReady = !document.getElementById("profile-field")?.hidden
+        && document.getElementById("auth-submit")?.textContent === "Create account";
+      document.getElementById("result").textContent = checks.every(Boolean) && registrationReady
+        ? "PASS AUTH GATE ACTIVE REGISTER"
+        : "FAIL AUTH GATE ERROR";
+    }, 5000);
+  </script>
+  <script type="module" src="/js/firebase-controller.js"></script>
+</body>
+</html>

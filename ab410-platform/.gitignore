@@ -1,0 +1,13 @@
+.edge-profile/
+content/*_extracted.txt
+content/*screenshot*.png
+# Firebase & Secrets
+.env.local
+.env
+firebase-config.json
+*.firebase-adminsdk*.json
+*service-account*.json
+serviceAccount*.json
+node_modules/
+dist/
+.DS_Store
