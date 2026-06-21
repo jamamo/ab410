@@ -1,8 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   getAuth,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   updateProfile
@@ -35,10 +37,12 @@ export {
   collection,
   createUserWithEmailAndPassword,
   db,
+  deleteUser,
   doc,
   getDoc,
   getDocs,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   serverTimestamp,
   setDoc,
   signInWithEmailAndPassword,

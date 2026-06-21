@@ -1,6 +1,8 @@
 .edge-profile/
 content/*_extracted.txt
 content/*screenshot*.png
+content/verify-harness.html
+*~
 # Firebase & Secrets
 .env.local
 .env
@@ -10,4 +12,6 @@ firebase-config.json
 serviceAccount*.json
 node_modules/
 dist/
+__pycache__/
+*.py[cod]
 .DS_Store

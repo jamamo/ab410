@@ -27,7 +27,7 @@ The Firebase Admin service-account key is used only for one-time local provision
 
 The script creates or finds the Firebase web app, enables email/password authentication, authorizes localhost and GitHub Pages, deploys firestore.rules, and writes only the public web configuration to js/firebase-setup.js.
 
-After provisioning, use Create account once for Jama and once for Ismail. Each account has private detailed progress; signed-in learners can see only the other learner's summary metrics.
+After provisioning, use Create account once for Jama and once for Ismail. Each profile name can be claimed only once. Detailed progress remains private; signed-in learners see only summary metrics for the two learner slots.
 
 ## Publishing
 

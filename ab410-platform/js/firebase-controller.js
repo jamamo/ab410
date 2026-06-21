@@ -3,10 +3,12 @@ import {
   collection,
   createUserWithEmailAndPassword,
   db,
+  deleteUser,
   doc,
   getDoc,
   getDocs,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   serverTimestamp,
   setDoc,
   signInWithEmailAndPassword,
@@ -25,6 +27,7 @@ let longestStreak = 0;
 let cohort = [];
 let syncTimer = null;
 let authMode = "signin";
+let registrationInProgress = false;
 
 if (!appApi) {
   throw new Error("AB-410 application API is unavailable.");
@@ -44,7 +47,9 @@ document.addEventListener("ab410:rendered", (event) => {
   if (event.detail?.view === "dashboard") renderCohort();
 });
 
-onAuthStateChanged(auth, handleAuthState, (error) => {
+onAuthStateChanged(auth, (user) => {
+  if (!registrationInProgress) handleAuthState(user);
+}, (error) => {
   showGate();
   setAuthError(readableAuthError(error));
 });
@@ -126,6 +131,7 @@ function createAuthGate() {
           '</fieldset>',
           '<label class="auth-field"><span>Email address</span><input id="auth-email" name="email" type="email" autocomplete="email" required></label>',
           '<label class="auth-field"><span>Password</span><input id="auth-password" name="password" type="password" autocomplete="current-password" minlength="6" required></label>',
+          '<button class="auth-reset" type="button" data-reset-password>Forgot password?</button>',
           '<p id="auth-error" class="auth-error" role="alert"></p>',
           '<button id="auth-submit" class="auth-submit" type="submit">Sign in</button>',
         '</form>',
@@ -141,6 +147,7 @@ function bindAuthEvents() {
   });
 
   document.getElementById("auth-form").addEventListener("submit", submitAuth);
+  document.querySelector("[data-reset-password]").addEventListener("click", resetPassword);
 
   accountSlot.addEventListener("click", async (event) => {
     if (!event.target.closest("[data-sign-out]")) return;
@@ -183,7 +190,13 @@ async function submitAuth(event) {
       if (!allowedNames.includes(profileName)) {
         throw new Error("Choose Jama or Ismail before creating the account.");
       }
+      registrationInProgress = true;
       const credential = await createUserWithEmailAndPassword(auth, email, password);
+      const slot = await getDoc(doc(db, "learnerProgress", profileName.toLowerCase()));
+      if (slot.exists() && slot.data().ownerUid !== credential.user.uid) {
+        await deleteUser(credential.user);
+        throw new Error(profileName + " already has a learner account. Sign in instead.");
+      }
       await updateProfile(credential.user, { displayName: profileName });
       await setDoc(doc(db, "users", credential.user.uid), {
         displayName: profileName,
@@ -191,14 +204,31 @@ async function submitAuth(event) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       }, { merge: true });
+      registrationInProgress = false;
+      await handleAuthState(credential.user);
     } else {
       await signInWithEmailAndPassword(auth, email, password);
     }
   } catch (error) {
     setAuthError(readableAuthError(error));
   } finally {
+    registrationInProgress = false;
     submit.disabled = false;
     submit.textContent = authMode === "register" ? "Create account" : "Sign in";
+  }
+}
+
+async function resetPassword() {
+  const email = document.getElementById("auth-email").value.trim();
+  if (!email) {
+    setAuthError("Enter your email address first.");
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    setAuthError("Password reset email sent.", "success");
+  } catch (error) {
+    setAuthError(readableAuthError(error));
   }
 }
 
@@ -256,7 +286,8 @@ async function syncNow() {
         updatedAt: serverTimestamp(),
         schemaVersion: 1
       }, { merge: true }),
-      setDoc(doc(db, "learnerProgress", currentUser.uid), {
+      setDoc(doc(db, "learnerProgress", currentProfile.displayName.toLowerCase()), {
+        ownerUid: currentUser.uid,
         displayName: currentProfile.displayName,
         lens: metrics.lens,
         readiness: metrics.readiness,
@@ -300,7 +331,7 @@ function renderAccount() {
   accountSlot.innerHTML = [
     '<div class="account-control">',
       '<span class="account-avatar" aria-hidden="true">', initial, '</span>',
-      '<span class="account-copy"><strong>', escapeHtml(currentProfile.displayName), '</strong><small><span id="sync-state">Saved</span> · ', currentStreak, ' day streak</small></span>',
+      '<span class="account-copy"><strong>', escapeHtml(currentProfile.displayName), '</strong><small><span id="sync-state">Saved</span> | ', currentStreak, ' day streak</small></span>',
       '<button class="account-signout" type="button" data-sign-out title="Sign out">Sign out</button>',
     '</div>'
   ].join("");
@@ -312,7 +343,8 @@ function renderCohort() {
 
   const currentMetrics = appApi.getMetrics();
   const currentSummary = {
-    id: currentUser.uid,
+    id: currentProfile.displayName.toLowerCase(),
+    ownerUid: currentUser.uid,
     displayName: currentProfile?.displayName || "Learner",
     currentStreak,
     readiness: currentMetrics.readiness,
@@ -324,13 +356,13 @@ function renderCohort() {
     lens: currentMetrics.lens
   };
   const summaries = cohort
-    .filter((item) => item.id !== currentUser.uid)
+    .filter((item) => item.ownerUid !== currentUser.uid)
     .concat(currentSummary)
     .sort((a, b) => allowedNames.indexOf(a.displayName) - allowedNames.indexOf(b.displayName));
 
   const cards = summaries.map((learner) => {
     const readiness = clamp(learner.readiness);
-    const isCurrent = learner.id === currentUser.uid;
+    const isCurrent = learner.ownerUid === currentUser.uid;
     const lens = learner.lens === "engineering" ? "Engineering" : "Healthcare";
     return [
       '<article class="learner-card', isCurrent ? ' current' : '', '">',
@@ -419,8 +451,10 @@ function setSyncStatus(status) {
   }
 }
 
-function setAuthError(message) {
-  document.getElementById("auth-error").textContent = message || "";
+function setAuthError(message, tone = "error") {
+  const host = document.getElementById("auth-error");
+  host.textContent = message || "";
+  host.dataset.tone = message ? tone : "";
 }
 
 function readableAuthError(error) {
@@ -429,6 +463,7 @@ function readableAuthError(error) {
     "auth/email-already-in-use": "That email already has an account. Sign in instead.",
     "auth/invalid-credential": "The email or password is incorrect.",
     "auth/invalid-email": "Enter a valid email address.",
+    "auth/user-not-found": "No learner account uses that email address.",
     "auth/too-many-requests": "Too many attempts. Wait a moment and try again.",
     "auth/weak-password": "Use a password with at least six characters.",
     "auth/network-request-failed": "Firebase could not be reached. Check the connection and try again.",

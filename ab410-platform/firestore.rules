@@ -19,10 +19,19 @@ service cloud.firestore {
       }
     }
 
-    match /learnerProgress/{userId} {
+    match /learnerProgress/{profileId} {
       allow read: if signedIn();
-      allow create, update: if owns(userId)
-        && request.resource.data.displayName in ['Jama', 'Ismail'];
+      allow create: if signedIn()
+        && profileId in ['jama', 'ismail']
+        && request.resource.data.ownerUid == request.auth.uid
+        && (
+          (profileId == 'jama' && request.resource.data.displayName == 'Jama')
+          || (profileId == 'ismail' && request.resource.data.displayName == 'Ismail')
+        );
+      allow update: if signedIn()
+        && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.displayName == resource.data.displayName;
       allow delete: if false;
     }
   }
