@@ -397,6 +397,8 @@ function renderLesson(module) {
       </div>
     </section>
 
+    ${renderExpandedReference(module)}
+
     ${relatedLabs.length ? `
       <section class="lesson-section">
         <h3>Linked labs</h3>
@@ -734,6 +736,47 @@ function renderLensNote(module) {
   `;
 }
 
+function renderExpandedReference(module) {
+  const deepDives = module.deepDives || [];
+  const procedures = module.procedures || [];
+  if (!deepDives.length && !procedures.length) return "";
+
+  return `
+    <section class="lesson-section expanded-reference">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Expanded study notes</p>
+          <h3>Detailed reference and procedures</h3>
+        </div>
+        <span class="status-pill">${deepDives.length + procedures.length} sections</span>
+      </div>
+      <div class="reference-stack">
+        ${deepDives.map((section) => `
+          <details class="reference-item">
+            <summary>${escapeHtml(lensText(section.title))}</summary>
+            <div class="reference-body">
+              ${section.intro ? `<p>${escapeHtml(lensText(section.intro))}</p>` : ""}
+              ${section.points?.length ? `<ul class="clean-list">${section.points.map((point) => `<li>${escapeHtml(lensText(point))}</li>`).join("")}</ul>` : ""}
+              ${section.example ? `<div class="reference-example"><strong>Worked example</strong><p>${escapeHtml(lensText(section.example))}</p></div>` : ""}
+              ${section.examTip ? `<div class="reference-exam"><strong>Exam reflex</strong><p>${escapeHtml(lensText(section.examTip))}</p></div>` : ""}
+            </div>
+          </details>
+        `).join("")}
+        ${procedures.map((procedure) => `
+          <details class="reference-item procedure-item">
+            <summary>${escapeHtml(lensText(procedure.title))}</summary>
+            <div class="reference-body">
+              <ol class="procedure-list">
+                ${procedure.steps.map((step) => `<li>${escapeHtml(lensText(step))}</li>`).join("")}
+              </ol>
+            </div>
+          </details>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function moduleRailItem(module, active) {
   const progress = moduleMastery(module);
   const domain = domainById(module.domain);
@@ -758,6 +801,14 @@ function filteredCourseModules() {
       module.coreIdea,
       ...module.topics,
       ...module.outcomes,
+      ...(module.deepDives || []).flatMap((section) => [
+        section.title,
+        section.intro || "",
+        ...(section.points || []),
+        section.example || "",
+        section.examTip || ""
+      ]),
+      ...(module.procedures || []).flatMap((procedure) => [procedure.title, ...procedure.steps]),
       activeLens().moduleLens?.[module.id]?.title || "",
       activeLens().moduleLens?.[module.id]?.scenario || ""
     ].join(" ").toLowerCase();
